@@ -1,0 +1,17 @@
+# Build output
+bin/
+obj/
+TemNhan/installer/publish/
+TemNhan_Ban_Chay/
+*.user
+.vs/
+
+# Bộ cài Brother / bản đóng gói (quá lớn cho GitHub)
+*.exe
+*.zip
+*.msi
+
+# Claude cục bộ
+.claude/logs/
+.claude/pending/
+.claude/settings.local.json

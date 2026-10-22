@@ -1,0 +1,39 @@
+{
+  "Sheets": [
+    {
+      "WidthMm": 40,
+      "HeightMm": 24,
+      "MarginMm": 0,
+      "AutoLength": false,
+      "Name": "Trang 1",
+      "PaperColor": "#FFFFFF",
+      "Elements": [
+        {
+          "type": "text",
+          "KindName": "Chữ",
+          "Text": "Tem nhãn T",
+          "FontFamily": "Arial",
+          "FontSizePt": 20,
+          "Bold": true,
+          "Italic": false,
+          "HAlign": "Center",
+          "VAlign": "Center",
+          "ShrinkToFit": true,
+          "Wrap": false,
+          "X": 4,
+          "Y": 0,
+          "W": 32.5,
+          "H": 24,
+          "Rotation": 0,
+          "GroupId": null,
+          "Locked": false,
+          "Printable": true
+        }
+      ],
+      "DataSourcePath": null,
+      "DataSheet": null
+    }
+  ],
+  "DataSourcePath": null,
+  "DataSheet": null
+}

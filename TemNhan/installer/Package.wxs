@@ -1,0 +1,55 @@
+<!--
+  Bộ cài Tem in(THIEUXK) (WiX 5). Cài cho người dùng hiện tại → không cần quyền admin.
+  Build: wix build installer\Package.wxs -arch x64 -d PublishDir=<thư mục publish> -o TemNhan_CaiDat.msi
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="Tem in(THIEUXK)" Manufacturer="THIEUXK" Version="1.1.1.0"
+           UpgradeCode="6E1C2B7A-4F3D-4C8E-9A51-3B0D7F2E8C14"
+           Scope="perUser" Language="1066" Codepage="65001">
+    <SummaryInformation Description="Tem in(THIEUXK) — thiết kế và in nhãn cho mọi máy in" />
+    <MajorUpgrade DowngradeErrorMessage="Máy đã cài phiên bản Tem in(THIEUXK) mới hơn." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <Icon Id="AppIcon" SourceFile="..\app.ico" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon" />
+    <Property Id="ARPNOMODIFY" Value="1" />
+
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="ProgramsDir" Name="Programs">
+        <Directory Id="INSTALLFOLDER" Name="TemNhan" />
+      </Directory>
+    </StandardDirectory>
+
+    <Feature Id="Main">
+      <ComponentGroupRef Id="AppFiles" />
+    </Feature>
+  </Package>
+
+  <Fragment>
+    <ComponentGroup Id="AppFiles" Directory="INSTALLFOLDER">
+      <!-- Cài theo người dùng: khoá của component phải là registry HKCU -->
+      <Component Id="AppExe" Guid="A3F0C1D2-5B6E-4A7F-8C9D-0E1F2A3B4C5D">
+        <File Id="TemNhanExe" Source="$(PublishDir)\TemNhan.exe" KeyPath="no" />
+        <RegistryValue Root="HKCU" Key="Software\TemNhan" Name="InstallDir" Type="string" Value="[INSTALLFOLDER]" KeyPath="yes" />
+
+        <Shortcut Id="StartMenuShortcut" Directory="ProgramMenuFolder" Name="Tem in(THIEUXK)"
+                  Description="Thiết kế và in nhãn" Target="[INSTALLFOLDER]TemNhan.exe"
+                  WorkingDirectory="INSTALLFOLDER" Icon="AppIcon" />
+        <Shortcut Id="DesktopShortcut" Directory="DesktopFolder" Name="Tem in(THIEUXK)"
+                  Description="Thiết kế và in nhãn" Target="[INSTALLFOLDER]TemNhan.exe"
+                  WorkingDirectory="INSTALLFOLDER" Icon="AppIcon" />
+
+        <!-- Bấm đúp file .tnl mở bằng Tem in(THIEUXK) -->
+        <RegistryValue Root="HKCU" Key="Software\Classes\.tnl" Type="string" Value="TemNhan.Mau" />
+        <RegistryValue Root="HKCU" Key="Software\Classes\TemNhan.Mau" Type="string" Value="Mẫu nhãn Tem in(THIEUXK)" />
+        <RegistryValue Root="HKCU" Key="Software\Classes\TemNhan.Mau\DefaultIcon" Type="string" Value="&quot;[INSTALLFOLDER]TemNhan.exe&quot;,0" />
+        <RegistryValue Root="HKCU" Key="Software\Classes\TemNhan.Mau\shell\open\command" Type="string" Value="&quot;[INSTALLFOLDER]TemNhan.exe&quot; &quot;%1&quot;" />
+        <!-- .lbx: chỉ thêm vào "Open with", không giành quyền mở mặc định của P-touch Editor -->
+        <RegistryValue Root="HKCU" Key="Software\Classes\.lbx\OpenWithProgids" Name="TemNhan.Mau" Type="string" Value="" />
+
+        <RemoveFolder Id="RemoveInstallFolder" On="uninstall" />
+        <RemoveFolder Id="RemoveProgramsDir" Directory="ProgramsDir" On="uninstall" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

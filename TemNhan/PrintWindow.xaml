@@ -1,0 +1,113 @@
+﻿<Window x:Class="TemNhan.PrintWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="clr-namespace:TemNhan.Controls"
+        Title="In nhãn" Width="1120" Height="700" MinWidth="760" MinHeight="480"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False" FontSize="13" Background="White">
+    <DockPanel>
+        <!-- Thanh dưới: số nhãn + In / Huỷ -->
+        <Border DockPanel.Dock="Bottom" BorderBrush="{StaticResource Line}" BorderThickness="0,1,0,0" Padding="18,12">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                    <TextBlock Text="Số nhãn:" VerticalAlignment="Center" Foreground="{StaticResource Muted}" />
+                    <TextBlock x:Name="Summary" FontSize="20" VerticalAlignment="Center" Margin="8,0,20,0" />
+                    <Button Content="In" IsDefault="True" Width="104" Style="{StaticResource Primary}" Click="Print_Click" />
+                    <Button Content="Huỷ" IsCancel="True" Width="96" Margin="8,0,0,0" />
+                </StackPanel>
+                <TextBlock x:Name="PreviewNote" VerticalAlignment="Center" Foreground="{StaticResource Muted}" TextTrimming="CharacterEllipsis" />
+            </DockPanel>
+        </Border>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="320" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Tuỳ chọn -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Background="{StaticResource PanelBg}">
+                <StackPanel Margin="20,14,20,16">
+                    <TextBlock Text="Máy in" FontWeight="SemiBold" />
+                    <ComboBox x:Name="PrinterBox" Padding="6,4" Margin="0,6,0,0" />
+                    <TextBlock x:Name="PrinterHint" Foreground="{StaticResource Muted}" FontSize="12" TextWrapping="Wrap" Margin="0,6,0,0" />
+                    <CheckBox x:Name="RotateBox" Margin="0,8,0,0" ><TextBlock Text="Xoay nhãn 90° (khi bản in bị xoay hoặc bị cắt)" TextWrapping="Wrap" /></CheckBox>
+                    <StackPanel x:Name="DriverOptions" Visibility="Collapsed">
+                        <TextBlock Text="Tuỳ chọn máy in" FontWeight="SemiBold" Margin="0,14,0,0" />
+                        <CheckBox x:Name="AutoCutBox" Visibility="Collapsed" ><TextBlock Text="Tự cắt sau mỗi nhãn" TextWrapping="Wrap" /></CheckBox>
+                        <CheckBox x:Name="HalfCutBox" Visibility="Collapsed" ><TextBlock Text="Cắt nửa (cắt băng, giữ lớp đế để nhãn dính liền)" TextWrapping="Wrap" /></CheckBox>
+                        <CheckBox x:Name="ChainBox" Visibility="Collapsed" ><TextBlock Text="In nối tiếp (không đẩy băng sau nhãn cuối — tiết kiệm băng)" TextWrapping="Wrap" /></CheckBox>
+                        <CheckBox x:Name="MirrorBox" Visibility="Collapsed" ><TextBlock Text="In gương (dán mặt trong kính)" TextWrapping="Wrap" /></CheckBox>
+                        <CheckBox x:Name="QualityBox" Visibility="Collapsed" ><TextBlock Text="Chất lượng cao (in chậm hơn)" TextWrapping="Wrap" /></CheckBox>
+                    </StackPanel>
+                    <Border Height="1" Background="{StaticResource Line}" Margin="0,14" />
+
+                    <TextBlock Text="Số bản mỗi nhãn" FontWeight="SemiBold" />
+                    <TextBox x:Name="CopiesBox" Text="1" Width="90" HorizontalAlignment="Left" Margin="0,6,0,0" />
+                    <Border Height="1" Background="{StaticResource Line}" Margin="0,14" />
+
+                    <TextBlock Text="Nhãn cần in" FontWeight="SemiBold" />
+                    <CheckBox x:Name="AllSheetsBox" Margin="0,8,0,4" Visibility="Collapsed" />
+                    <RadioButton x:Name="RangeCurrent" Content="Nhãn đang xem" IsChecked="True" Margin="0,6,0,2" />
+                    <RadioButton x:Name="RangeAll" Margin="0,4,0,2" />
+                    <RadioButton x:Name="RangeSelected" Margin="0,4,0,2" />
+                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                        <RadioButton x:Name="RangeFromTo" Content="Từ dòng" VerticalAlignment="Center" />
+                        <TextBox x:Name="FromBox" Width="56" Margin="8,0,6,0" Text="1" />
+                        <TextBlock Text="đến" VerticalAlignment="Center" />
+                        <TextBox x:Name="ToBox" Width="56" Margin="6,0,0,0" />
+                    </StackPanel>
+                    <Border Height="1" Background="{StaticResource Line}" Margin="0,14" />
+
+                    <TextBlock Text="Căn chỉnh" FontWeight="SemiBold" />
+                    <Grid Margin="0,4,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Lệch ngang (mm)" Style="{StaticResource Caption}" />
+                            <TextBox x:Name="OffsetXBox" Text="0" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Lệch dọc (mm)" Style="{StaticResource Caption}" />
+                            <TextBox x:Name="OffsetYBox" Text="0" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Xem trước: mỗi nhãn một dòng, chỉ vẽ phần đang nhìn thấy -->
+            <ListBox x:Name="PreviewList" Grid.Column="1" Background="{StaticResource WorkBg}" BorderThickness="1,0,0,0" BorderBrush="{StaticResource Line}"
+                     Padding="0,8" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
+                     VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Focusable" Value="False" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <ContentPresenter />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="16,6">
+                            <TextBlock Text="{Binding CopiesText}" FontWeight="SemiBold" Width="44" VerticalAlignment="Center" Foreground="{StaticResource Ink}" />
+                            <Border Background="White" Padding="6" CornerRadius="2">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="4" ShadowDepth="1" Opacity="0.18" />
+                                </Border.Effect>
+                                <c:LabelPreview />
+                            </Border>
+                            <TextBlock Text="{Binding Caption}" Margin="14,0,0,0" VerticalAlignment="Center" Foreground="{StaticResource Muted}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </DockPanel>
+</Window>
